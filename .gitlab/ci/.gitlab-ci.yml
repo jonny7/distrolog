@@ -1,4 +1,4 @@
-image: golang:1.17.5-alpine
+image: golang:1.17.5
 
 variables:
   REPO_NAME: gitlab.com/jonny7/distrolog
