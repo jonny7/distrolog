@@ -16,6 +16,8 @@ distrolog:test:
   script:
     - go vet $(go list ./... | grep -v /vendor/)
     - go test -v ./... -race -covermode=atomic -coverprofile=coverage.out
+    - go install golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest
+    - shadow ./...
     - go install github.com/jstemmer/go-junit-report@latest
     - go test -v ./... 2>&1 | go-junit-report > report.xml
     #- go install honnef.co/go/tools/cmd/staticcheck@latest

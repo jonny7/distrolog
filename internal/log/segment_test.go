@@ -23,13 +23,13 @@ func TestSegment(t *testing.T) {
 	require.Equal(t, uint64(16), s.nextOffset, s.nextOffset)
 	require.False(t, s.IsMaxed())
 	for i := uint64(0); i < 3; i++ {
-		off, err := s.Append(want)
+		off, e := s.Append(want)
 
-		require.NoError(t, err)
+		require.NoError(t, e)
 		require.Equal(t, 16+i, off)
 
-		got, err := s.Read(off)
-		require.NoError(t, err)
+		got, e := s.Read(off)
+		require.NoError(t, e)
 		require.Equal(t, want.Value, got.Value)
 	}
 	_, err = s.Append(want)

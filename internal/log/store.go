@@ -38,10 +38,10 @@ func newStore(f *os.File) (*store, error) {
 }
 
 // Append appends to the buffer and provides information about the success of that write
-func (s *store) Append(p []byte) (n uint64, pos uint64, err error) {
+func (s *store) Append(p []byte) (uint64, uint64, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	pos = s.size
+	pos := s.size
 	if err := binary.Write(s.buf, enc, uint64(len(p))); err != nil {
 		return 0, 0, err
 	}
