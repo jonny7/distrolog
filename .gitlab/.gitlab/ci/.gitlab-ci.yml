@@ -1,0 +1,28 @@
+image: golang:1.17.5-alpine
+
+variables:
+  REPO_NAME: gitlab.com/jonny7/distrolog
+
+before_script:
+  - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
+  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
+  - cd $GOPATH/src/$REPO_NAME
+
+stages:
+  - test
+
+distrolog:test:
+  stage: test
+  script:
+    - go vet $(go list ./... | grep -v /vendor/)
+    - go test -v ./... -race -covermode=atomic -coverprofile=coverage.out
+    - go install github.com/jstemmer/go-junit-report@latest
+    - go test -v ./... 2>&1 | go-junit-report > report.xml
+    #- go install honnef.co/go/tools/cmd/staticcheck@latest
+    #- staticcheck ./...
+  artifacts:
+    when: always
+    paths:
+      - report.xml
+    reports:
+      junit: report.xml
