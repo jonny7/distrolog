@@ -11,7 +11,7 @@ before_script:
 stages:
   - test
 
-distrolo:test:
+distrolog:test:
   stage: test
   script:
     - go vet $(go list ./... | grep -v /vendor/)
