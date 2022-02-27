@@ -1,9 +1,9 @@
 package log
 
 import (
-	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/require"
 	api "gitlab.com/jonny7/distrolog/api/v1"
+	"google.golang.org/protobuf/proto"
 	"io/ioutil"
 	"os"
 	"testing"

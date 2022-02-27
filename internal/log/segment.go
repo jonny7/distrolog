@@ -2,8 +2,8 @@ package log
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	api "gitlab.com/jonny7/distrolog/api/v1"
+	"google.golang.org/protobuf/proto"
 	"os"
 	"path"
 )
