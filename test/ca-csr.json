@@ -1,0 +1,16 @@
+{
+  "CN": "My Very Own CA",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CA",
+      "L": "",
+      "ST": "",
+      "O": "Distrolog",
+      "OU": "CA Services"
+    }
+  ]
+}

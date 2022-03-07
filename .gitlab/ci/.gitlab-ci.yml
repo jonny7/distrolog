@@ -7,6 +7,8 @@ before_script:
   - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
   - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
   - cd $GOPATH/src/$REPO_NAME
+  - make init
+  - make gencert
 
 stages:
   - test
@@ -22,6 +24,7 @@ distrolog:test:
     - go test -v ./... 2>&1 | go-junit-report > report.xml
     #- go install honnef.co/go/tools/cmd/staticcheck@latest
     #- staticcheck ./...
+    - make deinit
   artifacts:
     when: always
     paths:

@@ -3,6 +3,11 @@ CONFIG_PATH=${HOME}/.distrolog/
 .PHONY: init
 init:
 	mkdir -p ${CONFIG_PATH}
+
+.PHONY: deinit
+deinit:
+	rm -rf ${CONFIG_PATH}
+
 .PHONY: gencert
 gencert:
 	cfssl gencert \
