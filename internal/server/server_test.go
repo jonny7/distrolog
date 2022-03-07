@@ -4,9 +4,10 @@ import (
 	"context"
 	"github.com/stretchr/testify/require"
 	api "gitlab.com/jonny7/distrolog/api/v1"
+	"gitlab.com/jonny7/distrolog/internal/config"
 	"gitlab.com/jonny7/distrolog/internal/log"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 	"io/ioutil"
 	"net"
@@ -20,12 +21,34 @@ func setupTest(t *testing.T, fn func(config *Config)) (
 ) {
 	t.Helper()
 
-	l, err := net.Listen("tcp", ":0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 
-	clientOptions := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	cc, err := grpc.Dial(l.Addr().String(), clientOptions...)
+	clientTLSConfig, err := config.SetupTLSConfig(config.TLSConfig{
+		CertFile: config.ClientCertFile,
+		KeyFile:  config.ClientKeyFile,
+		CAFile:   config.CAFile,
+	})
 	require.NoError(t, err)
+
+	clientCredentials := credentials.NewTLS(clientTLSConfig)
+	cc, err := grpc.Dial(
+		l.Addr().String(),
+		grpc.WithTransportCredentials(clientCredentials),
+	)
+	require.NoError(t, err)
+
+	client = api.NewLogClient(cc)
+
+	serverTLSConfig, err := config.SetupTLSConfig(config.TLSConfig{
+		CertFile:      config.ServerCertFile,
+		KeyFile:       config.ServerKeyFile,
+		CAFile:        config.CAFile,
+		ServerAddress: l.Addr().String(),
+		Server:        true,
+	})
+	require.NoError(t, err)
+	serverCredentials := credentials.NewTLS(serverTLSConfig)
 
 	dir, err := ioutil.TempDir("", "server-test")
 	require.NoError(t, err)
@@ -33,19 +56,20 @@ func setupTest(t *testing.T, fn func(config *Config)) (
 	clog, err := log.NewLog(dir, log.Config{})
 	require.NoError(t, err)
 
-	cfg = &Config{CommitLog: clog}
+	cfg = &Config{
+		CommitLog: clog,
+	}
 
 	if fn != nil {
 		fn(cfg)
 	}
 
-	server, err := NewGRPCServer(cfg)
+	server, err := NewGRPCServer(cfg, grpc.Creds(serverCredentials))
 	require.NoError(t, err)
 
 	go func() {
 		server.Serve(l)
 	}()
-	client = api.NewLogClient(cc)
 
 	return client, cfg, func() {
 		server.Stop()
