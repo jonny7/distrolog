@@ -27,9 +27,6 @@ jobs:
       - name: Make certs
         run: make init && make gencert && make auth
 
-      - name: Build
-        run: go build -v ./...
-
       - name: Vet
         run: go vet ./...
 

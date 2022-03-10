@@ -24,8 +24,8 @@ func setupTest(t *testing.T, fn func(config *Config)) (
 ) {
 	t.Helper()
 
-	l, err := net.Listen("tcp", "127.0.0.1:0")
-	require.NoError(t, err)
+	l, netErr := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, netErr)
 
 	newClient := func(crtPath, keyPath string) (
 		*grpc.ClientConn,
