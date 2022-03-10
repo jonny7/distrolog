@@ -9,8 +9,7 @@ before_script:
   - cd $GOPATH/src/$REPO_NAME
   - go install github.com/cloudflare/cfssl/cmd/cfssl@v1.4.1
   - go install github.com/cloudflare/cfssl/cmd/cfssljson@v1.4.1
-  - make init
-  - make gencert
+  - make init && make gencert && make auth
 
 stages:
   - test
@@ -19,7 +18,7 @@ distrolog:test:
   stage: test
   script:
     - go vet $(go list ./... | grep -v /vendor/)
-    - go test -v ./... -race -covermode=atomic -coverprofile=coverage.out
+    - make test
     - go install golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest
     - shadow ./...
     - go install github.com/jstemmer/go-junit-report@latest

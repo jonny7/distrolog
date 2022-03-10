@@ -25,7 +25,7 @@ jobs:
         run: go install github.com/cloudflare/cfssl/cmd/cfssljson@v1.4.1
 
       - name: Make certs
-        run: make init && make gencert
+        run: make init && make gencert && make auth
 
       - name: Build
         run: go build -v ./...
@@ -37,7 +37,7 @@ jobs:
         run: go install golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@latest && shadow ./...
 
       - name: Test
-        run: go test -v ./... -race -covermode=atomic -coverprofile=coverage.out
+        run: make test
 
       - name: Go report card
         uses: creekorful/goreportcard-action@v1.0
