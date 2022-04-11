@@ -102,20 +102,20 @@ func setupTest(t *testing.T, fn func(config *Config)) (
 
 	var telemetryExporter *exporter.LogExporter
 	if *debug {
-		metricsLogFile, err := ioutil.TempFile("", "metrics-*.log")
-		require.NoError(t, err)
+		metricsLogFile, e := ioutil.TempFile("", "metrics-*.log")
+		require.NoError(t, e)
 		t.Logf("metrics log file: %s", metricsLogFile.Name())
 
-		traceLogFile, err := ioutil.TempFile("", "traces-*.log")
-		require.NoError(t, err)
+		traceLogFile, e := ioutil.TempFile("", "traces-*.log")
+		require.NoError(t, e)
 		t.Logf("traces log file: %s", traceLogFile.Name())
 
-		telemetryExporter, err := exporter.NewLogExporter(exporter.Options{
+		telemetryExporter, e = exporter.NewLogExporter(exporter.Options{
 			MetricsLogFile:    metricsLogFile.Name(),
 			TracesLogFile:     traceLogFile.Name(),
 			ReportingInterval: time.Second,
 		})
-		require.NoError(t, err)
+		require.NoError(t, e)
 		err = telemetryExporter.Start()
 		require.NoError(t, err)
 	}
