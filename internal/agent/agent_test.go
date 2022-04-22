@@ -1,4 +1,5 @@
-package agent
+// blackbox test only against public methods
+package agent_test
 
 import (
 	"context"
@@ -7,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/travisjeffery/go-dynaport"
 	api "gitlab.com/jonny7/distrolog/api/v1"
+	"gitlab.com/jonny7/distrolog/internal/agent"
 	"gitlab.com/jonny7/distrolog/internal/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -17,7 +19,7 @@ import (
 )
 
 func TestAgent(t *testing.T) {
-	var agents []*Agent
+	var agents []*agent.Agent
 
 	serverTLSConfig, err := config.SetupTLSConfig(config.TLSConfig{
 		CertFile:      config.ServerCertFile,
@@ -50,7 +52,7 @@ func TestAgent(t *testing.T) {
 			startJoinAddrs = append(startJoinAddrs, agents[0].Config.BindAddr)
 		}
 
-		agent, e := New(Config{
+		agent, e := agent.New(agent.Config{
 			NodeName:        fmt.Sprintf("%d", i),
 			StartJoinAddrs:  startJoinAddrs,
 			BindAddr:        bindAddr,
@@ -112,7 +114,7 @@ func TestAgent(t *testing.T) {
 	require.Equal(t, consumeResponse.Record.Value, []byte("foo"))
 }
 
-func client(t *testing.T, agent *Agent, tlsConfig *tls.Config) api.LogClient {
+func client(t *testing.T, agent *agent.Agent, tlsConfig *tls.Config) api.LogClient {
 	tlsCreds := credentials.NewTLS(tlsConfig)
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(tlsCreds)}
 	rpcAddr, err := agent.Config.RPCAddr()
